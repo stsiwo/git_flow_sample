@@ -1,11 +1,7 @@
 version: 2.1
 jobs:
   Spa-Service-Testing:
-    filters:
-      branches:
-        only:
-          - master
-    docker: 
+   docker: 
       - image: alpine:3.7
     steps:
       - run:
