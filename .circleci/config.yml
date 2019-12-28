@@ -1,24 +1,96 @@
 version: 2
 jobs:
   build:
-    branches:
-      only:
-        - master
     docker: 
       - image: alpine:3.7
     steps:
       - run:
-          name: Run Spa
+          name: Build 
           command: |
-            echo 'Running Spa Testing'
-  spa-testing:
-    branches:
-      only:
-        - develop
+            echo 'Build'
+  spa-service-testing:
     docker: 
       - image: alpine:3.7
     steps:
       - run:
-          name: Run Spa (dev only)
+          name: Run Spa (dev and release and master)
           command: |
             echo 'Running Spa Testing (dev only)'
+  api-service-testing:
+    docker: 
+      - image: alpine:3.7
+    steps:
+      - run:
+          name: Run api (dev and release and master)
+          command: |
+            echo 'Running api Testing (dev only)'
+  acceptance-testing:
+    docker: 
+      - image: alpine:3.7
+    steps:
+      - run:
+          name: Run Acceptance Testing (release and master)
+          command: |
+            echo 'Running api Testing (dev only)'
+  deploy-staging:
+    docker: 
+      - image: alpine:3.7
+    steps:
+      - run:
+          name: Deploy to Staging (release and master and if acceptance testing has passed)
+          command: |
+            echo 'Deploy to Staging (release only and if acceptance testing has passed)'
+  deploy-production:
+    docker: 
+      - image: alpine:3.7
+    steps:
+      - run:
+          name: Deploy to Production (release and master and if acceptance testing has passed)
+          command: |
+            echo 'Deploy to Production (release only and if acceptance testing has passed)'
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - build
+      - spa-service-testing: 
+          requires:
+            - build
+          filters:
+            branches:
+              only: 
+                - develop
+                - release
+                - master
+      - api-service-testing:
+          requires:
+            - build
+          filters:
+            branches:
+              only: 
+                - develop
+                - release
+                - master
+      - acceptance-testing:
+          requires:
+            - spa-service-testing
+            - api-service-testing
+          filters:
+            branches:
+              only: 
+                - release
+                - master
+      - deploy-staging:
+          requires:
+            - acceptance-testing
+          filters:
+            branches:
+              only: 
+                - release
+      - deploy-production:
+          requires:
+            - acceptance-testing
+          filters:
+            branches:
+              only: 
+                - master
