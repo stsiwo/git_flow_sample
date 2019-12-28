@@ -1,0 +1,14 @@
+version: 2.1
+jobs:
+  Spa-Service-Testing:
+    filters:
+      branches:
+        only:
+          - master
+    docker: 
+      - image: alpine:3.7
+    steps:
+      - run:
+          name: Run Spa
+          command: |
+            echo 'Running Spa Testing'
