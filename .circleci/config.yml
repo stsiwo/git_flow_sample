@@ -11,3 +11,14 @@ jobs:
           name: Run Spa
           command: |
             echo 'Running Spa Testing'
+  spa-testing:
+    branches:
+      only:
+        - develop
+    docker: 
+      - image: alpine:3.7
+    steps:
+      - run:
+          name: Run Spa (dev only)
+          command: |
+            echo 'Running Spa Testing (dev only)'
